@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Head from "next/head";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -24,6 +25,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <Head>
+        <base href="/echo-trace/" />
+      </Head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-black text-terminal-fg`}
       >

@@ -1,3 +1,4 @@
+"use client";
 import { useEffect, useRef, useState } from "react";
 import { handleCommand } from "@/lib/gameEngine";
 import { GameState } from "@/types/types";

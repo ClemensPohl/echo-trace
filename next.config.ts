@@ -1,12 +1,7 @@
 import type { NextConfig } from "next";
 
-const nextConfig : NextConfig = {
-  output: 'export',
-  images: {
-    unoptimized: true,
-  },
-  basePath: '/echo-trace',
-  assetPrefix: '/echo-trace/',
+const nextConfig: NextConfig = {
+  /* config options here */
 };
 
 export default nextConfig;

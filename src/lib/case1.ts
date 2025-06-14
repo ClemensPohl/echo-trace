@@ -1,3 +1,4 @@
+"use client";
 import { GameData } from "@/types/types";
 
 export const case1: GameData = {

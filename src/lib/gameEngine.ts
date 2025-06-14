@@ -1,3 +1,4 @@
+"use client";
 import { CommandResult, GameState } from "@/types/types";
 import { case1 } from "./case1";
 
