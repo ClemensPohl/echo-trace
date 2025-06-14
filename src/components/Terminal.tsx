@@ -7,11 +7,6 @@ export default function Terminal({ game, setGame }: any) {
   const [currentLineIndex, setCurrentLineIndex] = useState(0);
   const [currentCharIndex, setCurrentCharIndex] = useState(0);
 
-  // Scroll to bottom when typedLog changes
-  useEffect(() => {
-    logRef.current?.scrollTo(0, logRef.current.scrollHeight);
-  }, [typedLog]);
-
   const isTyping = currentLineIndex < game.log.length;
 
 
@@ -67,16 +62,22 @@ export default function Terminal({ game, setGame }: any) {
     setGame(updatedGame);
   };
 
+  useEffect(() => {
+  if (logRef.current) {
+    logRef.current.scrollTop = logRef.current.scrollHeight;
+  }
+}, [typedLog]);
+
   return (
-    <div className="terminal-frame flex flex-col justify-between w-full h-full p-6 relative scanlines text-terminal-fg">
+<div className="terminal-frame flex flex-col h-full w-full p-6 relative scanlines text-terminal-fg">
       <h1 className="text-terminal-accent text-2xl mb-4 text-center font-bold tracking-wider glow-text">
         === CIPHER DETECTIVE TERMINAL ===
       </h1>
 
-      <div
-        ref={logRef}
-        className="flex-1 overflow-y-auto whitespace-pre-wrap text-sm pr-2 custom-scroll font-mono"
-      >
+<div
+  ref={logRef}
+  className="flex-1 overflow-y-auto whitespace-pre-wrap text-sm pr-2 custom-scroll font-mono"
+>
         {typedLog.map((line, i) => (
           <div key={i} className="leading-snug">{line}</div>
         ))}

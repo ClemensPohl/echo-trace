@@ -1,11 +1,49 @@
-export type GameState = {
+import { case1 } from "@/lib/case1";
+
+
+export interface GameState {
   log: string[];
   input: string;
-  location: string;
-  health: number;
-  inventory: string[];
-  progress: number; // 0–1 (e.g., 0.25 = 25%)
-  caseId: string;
+  location: string; // e.g. "office"
   solved: boolean;
-  events: Record<string, boolean>; // for flags like riddle1Solved
+  progress: number; // 0 to 1
+}
+
+export interface CommandResult {
+  newLog: string[];
+  updatedState?: Partial<GameState>;
+}
+
+
+export const initialState: GameState = {
+  log: [...case1.intro],
+  input: "",
+  location: "office",
+  solved: false,
+  progress: 0
 };
+
+
+// JSON TYPEs
+
+export interface GamePuzzle {
+  type: "solve" | "decrypt";
+  input: string;
+  solution?: string; // Optional if input is already enough
+  success: string[];
+  next?: string;
+  solvesGame?: boolean;
+  hint?: string;
+}
+
+export interface GameScene {
+  description?: string[];
+  puzzle?: GamePuzzle;
+}
+
+export interface GameData {
+  intro: string[];
+  scenes: {
+    [sceneName: string]: GameScene;
+  };
+}

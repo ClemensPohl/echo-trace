@@ -6,6 +6,7 @@ export default function Sidebar({ game }: any) {
         <p>📍 Location: {game.location}</p>
         <p>❤️ Health: {game.health}</p>
         <p>🎒 Inventory: {game.inventory.join(", ") || "Empty"}</p>
+        <p>🧩 Riddles Solved: {game.riddlesSolved}</p>
       </div>
 
       <div className="terminal-frame p-4">
@@ -21,7 +22,8 @@ export default function Sidebar({ game }: any) {
           <li>move [location]</li>
           <li>investigate</li>
           <li>analyze [item]</li>
-          <li>solve [riddle]</li>
+          <li>solve [answer]</li>
+          <li>solve mystery</li>
           <li>help</li>
           <li>inventory</li>
         </ul>

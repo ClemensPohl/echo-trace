@@ -1,68 +1,76 @@
-export interface GameState {
-  log: string[];
-  input: string;
-  location: string;
-  health: number;
-  inventory: string[];
-  progress: number;
-  caseId: string;
-  solved: boolean;
-  events: Record<string, any>;
-}
+import type { CommandResult, GameData, GameState } from "@/types/types";
+import {case1} from "@/lib/case1";
 
-export const initialState: GameState = {
-  log: [
-    "=== CIPHER DETECTIVE TERMINAL INITIALIZED ===",
-    "",
-    "Welcome, Detective Alex Cipher.",
-    "",
-    "You've been called to investigate a series of mysterious incidents in Neo Ashridge.",
-    "Your reputation for solving complex puzzles and riddles precedes you.",
-    "",
-    "",
-    "A new case file has been uploaded to your terminal...",
-    "",
-    "",
-    "Type 'help' to see available commands or 'investigate' to begin.",
-  ],
-  input: "",
-  location: "apartment",
-  health: 100,
-  inventory: [],
-  progress: 0,
-  caseId: "cipher-murders",
-  solved: false,
-  events: {},
-};
-
-
-export interface CommandResult {
-  newLog: string[];
-  updatedState?: Partial<GameState>;
-}
 
 export function handleCommand(input: string, state: GameState): CommandResult {
+  const gameData: GameData = case1;
   const command = input.trim().toLowerCase();
   const newLog = [...state.log, `> ${command}`];
 
-  switch (command) {
-    case "help":
-      return {
-        newLog: [...newLog, "Available commands:", "- investigate", "- analyze [item]", "- solve [riddle]", "- examine [location]", "- help", "- inventory"]
-      };
-    case "investigate":
-      return {
-        newLog: [...newLog, "You approach the neon-lit alley where the body was found..."],
-        updatedState: { progress: state.progress + 0.1 }
-      };
-    case "inventory":
-      return {
-        newLog: [...newLog, `Inventory: ${state.inventory.join(", ") || "Empty"}`]
-      };
-    default:
-      return {
-        newLog: [...newLog, "Unknown command. Type 'help' to see valid commands."]
-      };
-  }
-}
+  const updatedState: Partial<GameState> = {};
+  
+  const scene = gameData.scenes[state.location];
 
+  if (state.solved) {
+    newLog.push("Case already solved. Type 'restart' to play again.");
+    return { newLog };
+  }
+
+  if (command === "help") {
+    newLog.push(
+      "Available commands:",
+      "- investigate",
+      "- decrypt [text]",
+      "- solve [answer]",
+      "- hint"
+    );
+    return { newLog };
+  }
+
+  if (command === "restart") {
+    window.location.reload();
+    return { newLog };
+  }
+
+  if (command === "hint") {
+    const hint = scene?.puzzle?.hint || "No hint available.";
+    newLog.push(`Hint: ${hint}`);
+    return { newLog };
+  }
+
+  if (command === "investigate") {
+    if (scene?.description) {
+      newLog.push(...scene.description);
+    } else {
+      newLog.push("Nothing to investigate here.");
+    }
+    return { newLog };
+  }
+
+  const [action, ...rest] = command.split(" ");
+  const answer = rest.join(" ");
+
+  if (scene?.puzzle) {
+    const { type, input, solution, success, next, solvesGame } = scene.puzzle;
+
+    const isCorrect = (
+      (type === "decrypt" && command === `decrypt ${input}`) ||
+      (type === "solve" && action === "solve" && answer === input)
+    );
+
+    if (isCorrect) {
+      newLog.push(...success);
+      if (next) updatedState.location = next;
+      if (solvesGame) {
+        updatedState.solved = true;
+        updatedState.progress = 1;
+      } else {
+        updatedState.progress = state.progress + 0.2;
+      }
+      return { newLog, updatedState };
+    }
+  }
+
+  newLog.push("Unknown command or incorrect answer. Type 'hint' if you're stuck.");
+  return { newLog };
+}
