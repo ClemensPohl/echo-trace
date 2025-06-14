@@ -9,11 +9,10 @@ export interface GamePuzzle {
   solvesGame?: boolean;
   hint?: string;
   inventoryItem?: string;
-  aiMessageTrigger?: string;
 }
 
 export interface GameScene {
-  description?: string[];
+  description: string[];
   puzzle?: GamePuzzle;
 }
 
@@ -31,19 +30,17 @@ export interface GameState {
   solved: boolean;
   progress: number;
   inventory: string[];
-  aiMessages: string[];
   caseId: string;
-  pendingMove?: string;
-  failedAttempts?: number;
-  hasInvestigated?: boolean;
+  hasInvestigated: boolean;
+  failedAttempts: number;
 }
 
 export interface CommandResult {
   newLog: string[];
   updatedState?: Partial<GameState>;
-  onComplete?: () => void;
 }
 
+// --- Initial State ---
 export const initialState: GameState = {
   log: [...case1.intro],
   input: "",
@@ -51,8 +48,7 @@ export const initialState: GameState = {
   solved: false,
   progress: 0,
   inventory: [],
-  aiMessages: [],
   caseId: "ECHO-1",
-  pendingMove: undefined,
+  hasInvestigated: false,
   failedAttempts: 0
 };

@@ -9,9 +9,6 @@ export default function Sidebar({ game }: { game: GameState }) {
         <p>📍 Location: {game.location}</p>
         <p>📊 Progress: {Math.round(game.progress * 100)}%</p>
         <p>{game.solved ? "✅ Solved" : "🔍 In Progress"}</p>
-        {game.pendingMove && (
-          <p>➡️ Pending Move: <strong>{game.pendingMove}</strong></p>
-        )}
       </div>
 
       {/* INVENTORY */}
@@ -30,7 +27,6 @@ export default function Sidebar({ game }: { game: GameState }) {
       <div className="terminal-frame p-4">
         <h2 className="text-terminal-accent font-bold uppercase mb-2">Case File</h2>
         <p className="font-semibold">{game.caseId}</p>
-        <p>🧠 AI Events: {game.aiMessages.length}</p>
       </div>
 
       {/* COMMAND LIST */}
@@ -42,9 +38,6 @@ export default function Sidebar({ game }: { game: GameState }) {
           <li>solve [answer]</li>
           <li>hint</li>
           <li>inventory</li>
-          <li>scan</li>
-          <li>where</li>
-          <li>go [location]</li>
           <li>restart</li>
         </ul>
       </div>

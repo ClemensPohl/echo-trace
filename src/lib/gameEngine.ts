@@ -2,104 +2,80 @@ import { CommandResult, GameState } from "@/types/types";
 import { case1 } from "./case1";
 
 export function handleCommand(input: string, state: GameState): CommandResult {
-  const rawInput = input.trim();
-  const normalizedInput = rawInput.toLowerCase().replace(/\s+/g, " ");
+  const normalizedInput = input.trim().toLowerCase();
   const scene = case1.scenes[state.location];
-  const newLog = [...state.log, `> ${rawInput}`];
+  const newLog = [...state.log, `> ${input}`];
   const updatedState: Partial<GameState> = {};
 
   if (state.solved) {
-    if (normalizedInput === "restart") window.location.reload();
-    else newLog.push("Case already solved. Type 'restart' to play again.");
+    newLog.push("Case already solved. Type 'restart' to play again.");
     return { newLog };
   }
 
+  // --- Help ---
   if (normalizedInput === "help") {
     newLog.push(
       "Available commands:",
       "- investigate",
-      "- decrypt [text]",
-      "- solve [answer]",
+      "- decrypt [text] / solve [answer]",
       "- hint",
-      "- inventory",
-      "- scan",
-      "- where",
-      "- go [location]",
-      "- restart"
+      "- inventory"
     );
     return { newLog };
   }
 
+  // --- Restart ---
   if (normalizedInput === "restart") {
     window.location.reload();
     return { newLog };
   }
 
-  if (normalizedInput === "hint") {
-    newLog.push(`Hint: ${scene?.puzzle?.hint ?? "No hint available."}`);
-    return { newLog };
-  }
-
+  // --- Inventory ---
   if (normalizedInput === "inventory") {
     newLog.push("🧳 Inventory:", ...(state.inventory.length ? state.inventory : ["(empty)"]));
     return { newLog };
   }
 
-  if (normalizedInput === "scan") {
-    newLog.push("📡 Scanning...", "System trace: clean. Electromagnetic distortion minimal.");
-    return { newLog };
-  }
-
-  if (normalizedInput === "where") {
-    newLog.push(`📍 Current: ${state.location}`);
-    if (state.pendingMove) newLog.push(`➡️ Available: ${state.pendingMove} (type 'go ${state.pendingMove}')`);
-    else newLog.push("🛑 No unlocked locations.");
-    return { newLog };
-  }
-
-  if (normalizedInput.startsWith("go ")) {
-    const dest = normalizedInput.slice(3);
-    if (dest === state.pendingMove) {
-      newLog.push(`🚪 Moving to ${dest}...`);
-      updatedState.location = dest;
-      updatedState.pendingMove = undefined;
-      const nextScene = case1.scenes[dest];
-      if (nextScene?.description) newLog.push(...nextScene.description);
-      return { newLog, updatedState };
-    } else {
-      newLog.push("❌ You can't go there yet.");
-      return { newLog };
-    }
-  }
-
-  if (["investigate", "look", "examine", "inspect"].includes(normalizedInput)) {
-    if (scene?.description) newLog.push(...scene.description);
+  // --- Investigate ---
+  if (normalizedInput === "investigate") {
+    newLog.push(...scene.description);
     updatedState.hasInvestigated = true;
     return { newLog, updatedState };
   }
 
+  // --- Prevent all puzzle-related commands before investigating ---
   if (!state.hasInvestigated) {
-    newLog.push("You should investigate your surroundings first.");
+    newLog.push("You should investigate first. Try 'investigate'.");
     return { newLog };
   }
 
-  // --- Puzzle handling ---
+  // --- Hint (only after investigation) ---
+  if (normalizedInput === "hint") {
+    newLog.push(`Hint: ${scene.puzzle?.hint ?? "No hint available."}`);
+    return { newLog };
+  }
+
+  // --- Puzzle Handling ---
   const [action, ...rest] = normalizedInput.split(" ");
   const answer = rest.join(" ").trim();
-  const puzzle = scene?.puzzle;
+  const puzzle = scene.puzzle;
 
   if (puzzle) {
-    const expectedAnswer = puzzle.input.trim().toLowerCase();
-
     const isCorrect =
-      ((action === "decrypt" || action === "solve") && answer === expectedAnswer) ||
-      (action === expectedAnswer); // Allow input like just "echo"
+      ((action === "decrypt" || action === "solve") && answer === puzzle.input.toLowerCase()) ||
+      normalizedInput.replace(/\s+/g, "") === puzzle.solution?.toLowerCase().replace(/\s+/g, "") ||
+      normalizedInput === puzzle.input.toLowerCase();
 
     if (isCorrect) {
       newLog.push(...puzzle.success);
 
+      if (puzzle.inventoryItem) {
+        updatedState.inventory = [...state.inventory, puzzle.inventoryItem];
+      }
+
       if (puzzle.next) {
-        updatedState.pendingMove = puzzle.next;
+        updatedState.location = puzzle.next;
+        updatedState.hasInvestigated = false;
       }
 
       if (puzzle.solvesGame) {
@@ -109,32 +85,12 @@ export function handleCommand(input: string, state: GameState): CommandResult {
         updatedState.progress = Math.min(state.progress + 0.25, 0.99);
       }
 
-      if (puzzle.inventoryItem) {
-        updatedState.inventory = [...state.inventory, puzzle.inventoryItem];
-      }
-
-      if (
-        updatedState.progress >= 0.5 &&
-        puzzle.aiMessageTrigger &&
-        !state.aiMessages.includes(puzzle.aiMessageTrigger)
-      ) {
-        newLog.push("🧠 Echo: You don’t know what you’re decrypting, Cipher.");
-        updatedState.aiMessages = [...state.aiMessages, puzzle.aiMessageTrigger];
-      }
-
       return { newLog, updatedState };
     }
   }
 
-  const failedAttempts = state.failedAttempts ? state.failedAttempts + 1 : 1;
-  updatedState.failedAttempts = failedAttempts;
-
-  if (failedAttempts >= 3 && !state.aiMessages.includes("nudge")) {
-    newLog.push("🧠 Echo: Lost already? Start by typing 'investigate'.");
-    updatedState.aiMessages = [...state.aiMessages, "nudge"];
-  } else {
-    newLog.push("Unknown command or incorrect answer. Type 'hint' if you're stuck.");
-  }
-
+  // --- Wrong Input ---
+  updatedState.failedAttempts = state.failedAttempts + 1;
+  newLog.push("Incorrect. Try 'hint' if you're stuck.");
   return { newLog, updatedState };
 }
