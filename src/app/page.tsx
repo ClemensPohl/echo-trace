@@ -23,7 +23,7 @@ export default function Home() {
     <Terminal game={game} setGame={setGame} />
   </div>
   <div className="w-[320px]">
-    {/* <Sidebar game={game} /> */}
+    <Sidebar game={game} />
   </div>
 </main>
 
