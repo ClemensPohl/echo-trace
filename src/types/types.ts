@@ -4,7 +4,7 @@ import { case1 } from "@/lib/case1";
 export interface GameState {
   log: string[];
   input: string;
-  location: string; // e.g. "office"
+  location: string; 
   solved: boolean;
   progress: number; // 0 to 1
 }

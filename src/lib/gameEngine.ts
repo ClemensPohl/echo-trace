@@ -12,7 +12,7 @@ export function handleCommand(input: string, state: GameState): CommandResult {
   const scene = gameData.scenes[state.location];
 
   if (state.solved) {
-    newLog.push("Case already solved. Type 'restart' to play again.");
+    command === "restart" ? window.location.reload() : newLog.push("Case already solved. Type 'restart' to play again.");
     return { newLog };
   }
 
