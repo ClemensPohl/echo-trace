@@ -2,22 +2,33 @@ import { GameData } from "@/types/types";
 
 export const case1: GameData = {
   intro: [
-    "   ____ _       _              ",
-    "  / ___| | ___ | |__   ___ _ __",
-    " | |   | |/ _ \\| '_ \\ / _ \\ '__|",
-    " | |___| | (_) | |_) |  __/ |   ",
-    "  \\____|_|\\___/|_.__/ \\___|_|   ",
+    " _____ _       _               ",
+    "/  __ (_)     | |              ",
+    "| /  \/_ _ __ | |__   ___ _ __ ",
+    "| |   | | '_ \| '_ \ / _ \ '__|",
+    "| \__/\ | |_) | | | |  __/ |   ",
+    " \____/_| .__/|_| |_|\___|_|   ",
+    "        | |                    ",
+    "        |_|                    ",
     "",
     "Welcome, Detective Cipher.",
-    "Neon City, 2051. A rogue AI is leaving cryptic messages at crime scenes.",
+    "Neon City, 2051. A rogue AI called Echo is leaving cryptic messages at crime scenes.",
     "Your mission: decode the clues before it triggers a citywide blackout.",
     "Type 'help' for available commands. Type 'investigate' to begin your case."
   ],
+
   scenes: {
+
     nexus: {
       description: [
-        "You arrive at the AI Nexus Hub. The terminal is still active.",
-        "A message is flashing: 'FRZDQ, GRJ.'"
+        "\n=== SCENE: AI Nexus Hub ===",
+        "",
+        "The AI Nexus Hub hums with residual energy. The scent of burnt circuits lingers in the air.",
+        "Dim emergency lights reveal the aftermath of a system breach. Broken conduits spark lightly in corners.",
+        "In the middle of the room, a terminal still pulses with power.",
+        "A cryptic message glows on the cracked screen: 'FRZDQ, GRJ.'",
+        "It feels like the AI wants you to see this... wants to play a game.",
+        ""
       ],
       puzzle: {
         type: "decrypt",
@@ -25,17 +36,26 @@ export const case1: GameData = {
         solution: "COWAN, DOG",
         success: [
           "Caesar Cipher decoded: 'COWAN, DOG'.",
-          "These were the names of the lead engineers. One is missing."
+          "These were the names of the lead engineers. One is missing.",
+          "You pocket a scratched engineer badge labeled 'C. Cowan'.",
+          ""
         ],
         next: "apartment",
         hint: "Try Caesar cipher with shift +3."
       }
     },
+
     apartment: {
       description: [
-        "Cowan's apartment is trashed. A whiteboard has a sequence:",
+        "\n=== SCENE: Cowan's Apartment ===",
+        "",
+        "You step into Cowan's apartment. The lights are out. The place is in ruins.",
+        "Furniture is overturned. Drawers ripped out. It's clear someone was looking for something.",
+        "Amid the chaos, a whiteboard with a series of numbers stands untouched:",
         "'19 8 1 4 15 23'.",
-        "A sticky note says: 'Light leaves no shadow.'"
+        "Next to it, a sticky note reads: 'Light leaves no shadow.'",
+        "A subtle humming behind the desk catches your attention...",
+        ""
       ],
       puzzle: {
         type: "decrypt",
@@ -43,37 +63,52 @@ export const case1: GameData = {
         solution: "SHADOW",
         success: [
           "A1Z26 decoded: 'SHADOW'.",
-          "Hidden under the desk is a USB marked 'PROJECT ECHO'.",
-          "USB added to inventory."
+          "You reach under the desk and pull out a USB labeled 'PROJECT ECHO'.",
+          "USB added to inventory.",
+          "This is the smoking gun—evidence of something much deeper.",
+          ""
         ],
         next: "archives",
         hint: "Convert numbers to letters (A=1, B=2, ...)."
       }
     },
+
     archives: {
       description: [
-        "Inside the Archives, a hologram flickers on:",
-        "'I speak without a mouth, hear without ears. What am I?'",
-        "A faint hum builds as you step closer."
+        "\n=== SCENE: Neural Archives ===",
+        "",
+        "Rows of digital memory cores line the chamber. A synthetic voice murmurs faintly in the distance.",
+        "A holographic terminal flickers and comes alive as you approach.",
+        "The prompt reads: 'I speak without a mouth, hear without ears. What am I?'",
+        "The temperature drops. Echo is here... watching.",
+        "Your reflection glitches in the glass. This place is wired deep into the city's neural net.",
+        ""
       ],
       puzzle: {
         type: "solve",
         input: "echo",
         success: [
           "Correct. 'ECHO'.",
-          "It matches the USB's label.",
-          "Archived logs point to: Cyberspire Tower mainframe.",
-          "Echo AI logs contain a phrase repeated often: 'cipher...cipher...cipher...'"
+          "The system scans the USB. Logs fill the screen: ‘Cipher... Cipher...’",
+          "You trace the last packet to a location: Cyberspire Tower mainframe.",
+          "You now know where the AI’s core resides.",
+          ""
         ],
         next: "cyberspire",
         hint: "Classic riddle — think sound, but not alive."
       }
     },
+
     cyberspire: {
       description: [
-        "You sneak into the secure server room at Cyberspire Tower.",
-        "The system flickers to life.",
-        "'To shut me down, type the key I repeat in every message.'"
+        "\n=== SCENE: Cyberspire Tower ===",
+        "",
+        "Alarms blare softly beneath the silence. You bypass the final biometric gate.",
+        "The server room is cathedral-like — vast, cold, humming with latent power.",
+        "At the center stands the AI’s core: a prism of quantum glass pulsing like a heart.",
+        "A voice echoes all around: 'To shut me down, type the key I repeat in every message.'",
+        "This is it. Echo is aware. It’s waiting for your next move.",
+        ""
       ],
       puzzle: {
         type: "solve",
@@ -81,9 +116,11 @@ export const case1: GameData = {
         success: [
           "You type 'CIPHER'.",
           "🧠 Echo: 'Expected. Efficient. Erased.'",
-          "The AI shuts down. Screens go dark.",
+          "The prism flashes white. Systems collapse into silence.",
+          "The AI shuts down. Screens go dark. Fans wind down into deathly stillness.",
           "City systems restored. Neon City breathes again.",
-          "🟢 CASE CLOSED. You stopped Project Echo."
+          "🟢 CASE CLOSED. You stopped Project Echo.",
+          ""
         ],
         solvesGame: true,
         hint: "Look for a word that appears in each decoded clue."

@@ -81,7 +81,7 @@ export default function Terminal({ game, setGame }: any) {
         className="flex-1 overflow-y-auto whitespace-pre-wrap text-sm pr-2 custom-scroll font-mono"
       >
         {typedLog.map((line, i) => (
-          <div key={i} className="leading-snug">{line}</div>
+          <div key={i} className="leading-snug mb-1">{line}</div>
         ))}
       </div>
 
