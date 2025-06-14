@@ -14,7 +14,7 @@ export default function Terminal({ game, setGame }: any) {
 
   useEffect(() => {
     if (!isTyping) {
-      inputRef.current?.focus(); // <- NEW
+      inputRef.current?.focus();
       return;
     }
 
