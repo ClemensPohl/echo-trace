@@ -18,10 +18,11 @@ export interface CommandResult {
 export const initialState: GameState = {
   log: [...case1.intro],
   input: "",
-  location: "office",
+  location: "nexus",
   solved: false,
   progress: 0
 };
+
 
 
 // JSON TYPEs
