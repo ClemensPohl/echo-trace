@@ -1,8 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { handleCommand } from "@/lib/gameEngine";
+import { GameState } from "@/types/types";
 
+interface TerminalProps {
+  game: GameState;
+  setGame: (state: GameState) => void;
+}
 
-export default function Terminal({ game, setGame }: any) {
+export default function Terminal({ game, setGame }: TerminalProps) {
   const logRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 

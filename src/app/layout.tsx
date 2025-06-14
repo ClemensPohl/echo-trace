@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Det. Cipher",
+  title: "Echo trace",
   description: "A cyber-noir puzzle game. Track the rogue AI before it's too late.",
 };
 
