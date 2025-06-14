@@ -1,23 +1,5 @@
 import { case1 } from "@/lib/case1";
 
-export interface GameState {
-  log: string[];
-  input: string;
-  location: string;
-  solved: boolean;
-  progress: number;
-  inventory: string[];
-  aiMessages: string[];
-  caseId: string;
-  pendingMove?: string; // NEW
-}
-
-export interface CommandResult {
-  newLog: string[];
-  updatedState?: Partial<GameState>;
-  onComplete?: () => void;
-}
-
 export interface GamePuzzle {
   type: "solve" | "decrypt";
   input: string;
@@ -26,6 +8,8 @@ export interface GamePuzzle {
   next?: string;
   solvesGame?: boolean;
   hint?: string;
+  inventoryItem?: string;
+  aiMessageTrigger?: string;
 }
 
 export interface GameScene {
@@ -40,6 +24,25 @@ export interface GameData {
   };
 }
 
+export interface GameState {
+  log: string[];
+  input: string;
+  location: string;
+  solved: boolean;
+  progress: number;
+  inventory: string[];
+  aiMessages: string[];
+  caseId: string;
+  pendingMove?: string;
+  failedAttempts?: number;
+  hasInvestigated?: boolean;
+}
+
+export interface CommandResult {
+  newLog: string[];
+  updatedState?: Partial<GameState>;
+  onComplete?: () => void;
+}
 
 export const initialState: GameState = {
   log: [...case1.intro],
@@ -50,4 +53,6 @@ export const initialState: GameState = {
   inventory: [],
   aiMessages: [],
   caseId: "ECHO-1",
+  pendingMove: undefined,
+  failedAttempts: 0
 };
