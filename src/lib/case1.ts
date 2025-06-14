@@ -2,6 +2,12 @@ import { GameData } from "@/types/types";
 
 export const case1: GameData = {
   intro: [
+    "   ____ _       _              ",
+    "  / ___| | ___ | |__   ___ _ __",
+    " | |   | |/ _ \\| '_ \\ / _ \\ '__|",
+    " | |___| | (_) | |_) |  __/ |   ",
+    "  \\____|_|\\___/|_.__/ \\___|_|   ",
+    "",
     "Welcome, Detective Cipher.",
     "Neon City, 2051. A rogue AI is leaving cryptic messages at crime scenes.",
     "Your mission: decode the clues before it triggers a citywide blackout.",
@@ -19,8 +25,7 @@ export const case1: GameData = {
         solution: "COWAN, DOG",
         success: [
           "Caesar Cipher decoded: 'COWAN, DOG'.",
-          "These were the names of the lead engineers. One is missing.",
-          "Next location: Cowan's Apartment."
+          "These were the names of the lead engineers. One is missing."
         ],
         next: "apartment",
         hint: "Try Caesar cipher with shift +3."
@@ -39,7 +44,7 @@ export const case1: GameData = {
         success: [
           "A1Z26 decoded: 'SHADOW'.",
           "Hidden under the desk is a USB marked 'PROJECT ECHO'.",
-          "Next location: Neural Archives."
+          "USB added to inventory."
         ],
         next: "archives",
         hint: "Convert numbers to letters (A=1, B=2, ...)."
@@ -48,7 +53,8 @@ export const case1: GameData = {
     archives: {
       description: [
         "Inside the Archives, a hologram flickers on:",
-        "'I speak without a mouth, hear without ears. What am I?'"
+        "'I speak without a mouth, hear without ears. What am I?'",
+        "A faint hum builds as you step closer."
       ],
       puzzle: {
         type: "solve",
@@ -56,7 +62,8 @@ export const case1: GameData = {
         success: [
           "Correct. 'ECHO'.",
           "It matches the USB's label.",
-          "The logs reveal the AI’s core is housed in a secret server room at Cyberspire Tower."
+          "Archived logs point to: Cyberspire Tower mainframe.",
+          "Echo AI logs contain a phrase repeated often: 'cipher...cipher...cipher...'"
         ],
         next: "cyberspire",
         hint: "Classic riddle — think sound, but not alive."
@@ -64,7 +71,8 @@ export const case1: GameData = {
     },
     cyberspire: {
       description: [
-        "You sneak into the server room. On the mainframe:",
+        "You sneak into the secure server room at Cyberspire Tower.",
+        "The system flickers to life.",
         "'To shut me down, type the key I repeat in every message.'"
       ],
       puzzle: {
@@ -72,9 +80,10 @@ export const case1: GameData = {
         input: "cipher",
         success: [
           "You type 'CIPHER'.",
+          "🧠 Echo: 'Expected. Efficient. Erased.'",
           "The AI shuts down. Screens go dark.",
           "City systems restored. Neon City breathes again.",
-          "CASE CLOSED. You stopped Project Echo."
+          "🟢 CASE CLOSED. You stopped Project Echo."
         ],
         solvesGame: true,
         hint: "Look for a word that appears in each decoded clue."

@@ -1,18 +1,15 @@
-import type { CommandResult, GameData, GameState } from "@/types/types";
-import {case1} from "@/lib/case1";
-
+import { CommandResult, GameState } from "@/types/types";
+import { case1 } from "@/lib/case1";
 
 export function handleCommand(input: string, state: GameState): CommandResult {
-  const gameData: GameData = case1;
   const command = input.trim().toLowerCase();
+  const scene = case1.scenes[state.location];
   const newLog = [...state.log, `> ${command}`];
-
   const updatedState: Partial<GameState> = {};
-  
-  const scene = gameData.scenes[state.location];
 
   if (state.solved) {
-    command === "restart" ? window.location.reload() : newLog.push("Case already solved. Type 'restart' to play again.");
+    if (command === "restart") window.location.reload();
+    else newLog.push("Case already solved. Type 'restart' to play again.");
     return { newLog };
   }
 
@@ -22,7 +19,12 @@ export function handleCommand(input: string, state: GameState): CommandResult {
       "- investigate",
       "- decrypt [text]",
       "- solve [answer]",
-      "- hint"
+      "- hint",
+      "- inventory",
+      "- scan",
+      "- where",
+      "- go [location]",
+      "- restart"
     );
     return { newLog };
   }
@@ -33,40 +35,81 @@ export function handleCommand(input: string, state: GameState): CommandResult {
   }
 
   if (command === "hint") {
-    const hint = scene?.puzzle?.hint || "No hint available.";
-    newLog.push(`Hint: ${hint}`);
+    newLog.push(`Hint: ${scene?.puzzle?.hint ?? "No hint available."}`);
     return { newLog };
   }
 
-  if (command === "investigate") {
-    if (scene?.description) {
-      newLog.push(...scene.description);
+  if (command === "inventory") {
+    newLog.push("🧳 Inventory:", ...(state.inventory.length ? state.inventory : ["(empty)"]));
+    return { newLog };
+  }
+
+  if (command === "scan") {
+    newLog.push("📡 Scanning...", "System trace: clean. Electromagnetic distortion minimal.");
+    return { newLog };
+  }
+
+  if (command === "where") {
+    newLog.push(`📍 Current: ${state.location}`);
+    if (state.pendingMove) newLog.push(`➡️ Available: ${state.pendingMove} (type 'go ${state.pendingMove}')`);
+    else newLog.push("🛑 No unlocked locations.");
+    return { newLog };
+  }
+
+  if (command.startsWith("go ")) {
+    const dest = command.slice(3);
+    if (dest === state.pendingMove) {
+      newLog.push(`🚪 Moving to ${dest}...`);
+      updatedState.location = dest;
+      updatedState.pendingMove = undefined;
+      return { newLog, updatedState };
     } else {
-      newLog.push("Nothing to investigate here.");
+      newLog.push("❌ You can't go there yet.");
+      return { newLog };
     }
+  }
+
+  if (command === "investigate") {
+    if (scene?.description) newLog.push(...scene.description);
+    else newLog.push("Nothing to investigate here.");
     return { newLog };
   }
 
   const [action, ...rest] = command.split(" ");
   const answer = rest.join(" ");
+  const puzzle = scene?.puzzle;
 
-  if (scene?.puzzle) {
-    const { type, input, solution, success, next, solvesGame } = scene.puzzle;
+  if (puzzle) {
+    const { type, input: expectedInput, success, next, solvesGame } = puzzle;
 
-    const isCorrect = (
-      (type === "decrypt" && command === `decrypt ${input}`) ||
-      (type === "solve" && action === "solve" && answer === input)
-    );
+    const isCorrect =
+      (type === "decrypt" && command === `decrypt ${expectedInput}`) ||
+      (type === "solve" && action === "solve" && answer === expectedInput);
 
     if (isCorrect) {
       newLog.push(...success);
-      if (next) updatedState.location = next;
+
+      if (next) {
+        newLog.push(`📍 Type 'go ${next}' to proceed.`);
+        updatedState.pendingMove = next;
+      }
+
       if (solvesGame) {
         updatedState.solved = true;
         updatedState.progress = 1;
       } else {
-        updatedState.progress = state.progress + 0.2;
+        updatedState.progress = Math.min(state.progress + 0.25, 0.99);
       }
+
+      if (next === "archives") {
+        updatedState.inventory = [...state.inventory, "USB: Project Echo"];
+      }
+
+      if (updatedState.progress >= 0.5 && !state.aiMessages.includes("warned")) {
+        newLog.push("🧠 Echo: You don’t know what you’re decrypting, Cipher.");
+        updatedState.aiMessages = [...state.aiMessages, "warned"];
+      }
+
       return { newLog, updatedState };
     }
   }
