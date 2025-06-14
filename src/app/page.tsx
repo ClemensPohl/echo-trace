@@ -1,9 +1,9 @@
 "use client";
 import { useState, useEffect } from "react";
-import { initialState } from "@/lib/data";
 import { loadGame, saveGame } from "@/lib/storage";
 import Terminal from "@/components/Terminal";
 import Sidebar from "@/components/Sidebar";
+import { initialState } from "@/lib/gameEngine";
 
 export default function Home() {
   const [game, setGame] = useState(initialState);

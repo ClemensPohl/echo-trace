@@ -1,50 +1,102 @@
-"use client";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { handleCommand } from "@/lib/gameEngine";
 
 export default function Terminal({ game, setGame }: any) {
   const logRef = useRef<HTMLDivElement>(null);
+  const [typedLog, setTypedLog] = useState<string[]>([]);
+  const [currentLineIndex, setCurrentLineIndex] = useState(0);
+  const [currentCharIndex, setCurrentCharIndex] = useState(0);
 
-  const handleEnter = () => {
-    const newLog = handleCommand(game.input, game);
-    setGame({ ...game, log: newLog, input: "" });
-  };
-
+  // Scroll to bottom when typedLog changes
   useEffect(() => {
     logRef.current?.scrollTo(0, logRef.current.scrollHeight);
-  }, [game.log]);
+  }, [typedLog]);
+
+  const isTyping = currentLineIndex < game.log.length;
+
+
+  useEffect(() => {
+  if (!isTyping) return;
+
+  const line = game.log[currentLineIndex] ?? "";
+
+  // Skip empty lines instantly
+  if (line === "") {
+    setTypedLog((prev) => [...prev, ""]);
+    setCurrentLineIndex((prev) => prev + 1);
+    setCurrentCharIndex(0);
+    return;
+  }
+
+  const timeout = setTimeout(() => {
+    setTypedLog((prev) => {
+      const updated = [...prev];
+      const currentLine = updated[currentLineIndex] || "";
+      const nextChar = line[currentCharIndex] ?? "";
+      updated[currentLineIndex] = currentLine + nextChar;
+      return updated;
+    });
+
+    if (currentCharIndex + 1 < line.length) {
+      setCurrentCharIndex((prev) => prev + 1);
+    } else {
+      setCurrentLineIndex((prev) => prev + 1);
+      setCurrentCharIndex(0);
+    }
+  }, 10); // Typing speed
+
+  return () => clearTimeout(timeout);
+}, [currentLineIndex, currentCharIndex, isTyping, game.log]);
+
+
+  const handleEnter = () => {
+    if (isTyping) return;
+
+    const result = handleCommand(game.input, game);
+    const updatedGame = {
+      ...game,
+      ...result.updatedState,
+      log: result.newLog,
+      input: "",
+    };
+
+    // Reset typewriter state
+    setCurrentLineIndex(typedLog.length);
+    setCurrentCharIndex(0);
+    setTypedLog([...typedLog]); // preserve already typed lines
+    setGame(updatedGame);
+  };
 
   return (
-<div className="terminal-frame flex flex-col justify-between w-full h-full p-6 relative scanlines text-terminal-fg">
+    <div className="terminal-frame flex flex-col justify-between w-full h-full p-6 relative scanlines text-terminal-fg">
+      <h1 className="text-terminal-accent text-2xl mb-4 text-center font-bold tracking-wider glow-text">
+        === CIPHER DETECTIVE TERMINAL ===
+      </h1>
 
-  <h1 className="text-terminal-accent text-2xl mb-4 text-center font-bold tracking-wider glow-text">
-    === CIPHER DETECTIVE TERMINAL ===
-  </h1>
+      <div
+        ref={logRef}
+        className="flex-1 overflow-y-auto whitespace-pre-wrap text-sm pr-2 custom-scroll font-mono"
+      >
+        {typedLog.map((line, i) => (
+          <div key={i} className="leading-snug">{line}</div>
+        ))}
+      </div>
 
-  {/* Log Area */}
-  <div
-    ref={logRef}
-    className="flex-1 overflow-y-auto whitespace-pre-wrap text-sm pr-2 custom-scroll"
-  >
-    {game.log.map((line: string, i: number) => (
-      <div key={i} className="leading-snug">{line}</div>
-    ))}
-  </div>
-
-  {/* Command input bar with spacing from bottom */}
-  <div className="mt-6 pt-4 border-t border-terminal-accent">
-    <div className="flex items-center mt-2">
-      <span className="text-terminal-accent font-semibold mr-2">detective@cipher:~$</span>
-      <input
-        className="flex-1 bg-terminal-bg border border-terminal-accent text-terminal-fg p-2 focus:outline-none focus:ring-2 focus:ring-terminal-accent rounded"
-        value={game.input}
-        onChange={(e) => setGame({ ...game, input: e.target.value })}
-        onKeyDown={(e) => e.key === "Enter" && handleEnter()}
-        placeholder="Enter command..."
-      />
+      <div className="mt-6 pt-4 border-t border-terminal-accent">
+        <div className="flex items-center mt-2">
+          <span className="text-terminal-accent font-semibold mr-2">
+            detective@cipher:~$
+          </span>
+          <input
+            className="flex-1 bg-terminal-bg border border-terminal-accent text-terminal-fg p-2 focus:outline-none focus:ring-2 focus:ring-terminal-accent rounded caret-terminal-accent pr-4"
+            value={game.input}
+            onChange={(e) => setGame({ ...game, input: e.target.value })}
+            onKeyDown={(e) => e.key === "Enter" && handleEnter()}
+            placeholder={isTyping ? "Please wait..." : "Enter command..."}
+            disabled={isTyping}
+          />
+        </div>
+      </div>
     </div>
-  </div>
-</div>
   );
 }
-
