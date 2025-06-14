@@ -15,20 +15,36 @@ export default function Terminal({ game, setGame }: any) {
   }, [game.log]);
 
   return (
-    <div className="md:col-span-2 p-6 border border-terminal-accent rounded shadow-terminal bg-terminal-bg">
-      <h1 className="text-terminal-accent text-2xl mb-4 text-center font-bold glow-text">CIPHER DETECTIVE TERMINAL</h1>
-      <div ref={logRef} className="h-[400px] overflow-y-auto whitespace-pre-wrap text-sm mb-4 pr-2">
-        {game.log.map((line: string, i: number) => <div key={i}>{line}</div>)}
-      </div>
-      <div className="flex">
-        <span className="text-terminal-accent mr-2">detective@cipher:~$</span>
-        <input
-          className="flex-1 bg-terminal-bg border border-terminal-accent text-terminal-fg p-2"
-          value={game.input}
-          onChange={(e) => setGame({ ...game, input: e.target.value })}
-          onKeyDown={(e) => e.key === "Enter" && handleEnter()}
-        />
-      </div>
+<div className="terminal-frame flex flex-col justify-between w-full h-full p-6 relative scanlines text-terminal-fg">
+
+  <h1 className="text-terminal-accent text-2xl mb-4 text-center font-bold tracking-wider glow-text">
+    === CIPHER DETECTIVE TERMINAL ===
+  </h1>
+
+  {/* Log Area */}
+  <div
+    ref={logRef}
+    className="flex-1 overflow-y-auto whitespace-pre-wrap text-sm pr-2 custom-scroll"
+  >
+    {game.log.map((line: string, i: number) => (
+      <div key={i} className="leading-snug">{line}</div>
+    ))}
+  </div>
+
+  {/* Command input bar with spacing from bottom */}
+  <div className="mt-6 pt-4 border-t border-terminal-accent">
+    <div className="flex items-center mt-2">
+      <span className="text-terminal-accent font-semibold mr-2">detective@cipher:~$</span>
+      <input
+        className="flex-1 bg-terminal-bg border border-terminal-accent text-terminal-fg p-2 focus:outline-none focus:ring-2 focus:ring-terminal-accent rounded"
+        value={game.input}
+        onChange={(e) => setGame({ ...game, input: e.target.value })}
+        onKeyDown={(e) => e.key === "Enter" && handleEnter()}
+        placeholder="Enter command..."
+      />
     </div>
+  </div>
+</div>
   );
 }
+

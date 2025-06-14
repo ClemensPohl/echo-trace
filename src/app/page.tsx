@@ -18,9 +18,14 @@ export default function Home() {
   }, [game]);
 
   return (
-    <main className="min-h-screen grid md:grid-cols-3 p-6 bg-background text-terminal-fg font-mono">
-      <Terminal game={game} setGame={setGame} />
-      <Sidebar game={game} />
-    </main>
+<main className="min-h-screen flex gap-10 px-10 py-8 bg-background text-terminal-fg font-mono">
+  <div className="flex-1 flex">
+    <Terminal game={game} setGame={setGame} />
+  </div>
+  <div className="w-[320px]">
+    <Sidebar game={game} />
+  </div>
+</main>
+
   );
 }
